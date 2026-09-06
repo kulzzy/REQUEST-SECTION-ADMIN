@@ -1,1 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<title>Kulzzy Radio Request Admin</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #071a3d;
+    color: #ffffff;
+}
+
+button,
+input {
+    font-family: inherit;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ================================
+   LOGIN
+================================ */
+
+#loginPage {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.login-box {
+    width: 100%;
+    max-width: 430px;
+    background: #0b2450;
+    border: 1px solid rgba(255,215,0,0.35);
+    border-radius: 18px;
+    padding: 28px 20px;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.35);
+}
+
+.login-title {
+    text-align: center;
+    color: #ffd700;
+    font-size: 26px;
+    font-weight: 900;
+    margin-bottom: 7px;
+}
+
+.login-subtitle {
+    text-align: center;
+    font-size: 13px;
+    margin-bottom: 25px;
+    color: #ffffff;
+}
+
+.field {
+    margin-bottom: 16px;
+}
+
+label {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+input {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 9px;
+    background: #ffffff;
+    color: #111111;
+    font-size: 15px;
+    outline: none;
+}
+
+input:focus {
+    border-color: #ffd700;
+    box-shadow: 0 0 0 2px rgba(255,215,0,0.15);
+}
+
+.login-button {
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    background: #ffd700;
+    color: #071a3d;
+    font-size: 16px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.login-button:hover {
+    background: #ffe44d;
+}
+
+.login-button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.login-error {
+    display: none;
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 9px;
+    background: #48151b;
+    border: 1px solid #ff6b6b;
+    color: #ffffff;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+/* ================================
+   ADMIN PAGE
+================================ */
+
+#adminPage {
+    min-height: 100vh;
+}
+
+.admin-header {
+    background: #0b2450;
+    border-bottom: 1px solid rgba(255,215,0,0.3);
+    padding: 17px 15px;
+}
+
+.header-inner {
+    max-width: 1100px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.admin-title {
+    margin: 0;
+    color: #ffd700;
+    font-size: 21px;
+    font-weight: 900;
+}
+
+.admin-subtitle {
+    margin: 4px 0 0;
+    font-size: 12px;
+}
+
+.logout-button {
+    border: 1px solid #ffd700;
+    background: transparent;
+    color: #ffd700;
+    padding: 9px 14px;
+    border-radius: 8px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.logout-button:hover {
+    background: #ffd700;
+    color: #071a3d;
+}
+
+.admin-content {
+    width: 100%;
+    max-width: 1100px;
+    margin: auto;
+    padding: 18px 12px 35px;
+}
+
+/* ================================
+   DASHBOARD CARDS
+================================ */
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.dashboard-card {
+    background: #0b2450;
+    border: 1px solid rgba(255,215,0,0.25);
+    border-radius: 12px;
+    padding: 17px;
+}
+
+.dashboard-card-title {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.dashboard-card-value {
+    margin-top: 6px;
+    color: #ffd700;
+    font-size: 25px;
+    font-weight: 900;
+}
+
+/* ================================
+   REQUEST SECTION
+================================ */
+
+.section-title {
+    margin: 22px 0 13px;
+    color: #ffd700;
+    font-size: 19px;
+    font-weight: 900;
+}
+
+.empty-box {
+    background: #0b2450;
+    border: 1px solid rgba(255,215,0,0.25);
+    border-radius: 12px;
+    padding: 25px 15px;
+    text-align: center;
+    font-size: 14px;
+    opacity: 0.85;
+}
+
+.request-list {
+    display: grid;
+    gap: 14px;
+}
+
+.request-card {
+    background: #0b2450;
+    border: 1px solid rgba(255,215,0,0.25);
+    border-radius: 14px;
+    padding: 17px;
+}
+
+.request-card h3 {
+    margin: 0 0 12px;
+    color: #ffd700;
+    font-size: 18px;
+}
+
+.request-row {
+    display: grid;
+    grid-template-columns: 170px 1fr;
+    gap: 8px;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    font-size: 13px;
+}
+
+.request-label {
+    font-weight: 800;
+    color: #ffd700;
+}
+
+.request-value {
+    word-break: break-word;
+}
+
+.status {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.status-paid {
+    background: #123d22;
+    border: 1px solid #55d477;
+    color: #ffffff;
+}
+
+.status-pending {
+    background: #493c12;
+    border: 1px solid #ffd700;
+    color: #ffffff;
+}
+
+.status-rejected {
+    background: #48151b;
+    border: 1px solid #ff6b6b;
+    color: #ffffff;
+}
+
+/* ================================
+   LOADING
+================================ */
+
+.loading {
+    text-align: center;
+    padding: 30px;
+    font-size: 14px;
+    color: #ffd700;
+}
+
+/* ================================
+   MOBILE
+================================ */
+
+@media (max-width: 700px) {
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .header-inner {
+        align-items: flex-start;
+    }
+
+    .admin-title {
+        font-size: 18px;
+    }
+
+    .logout-button {
+        white-space: nowrap;
+    }
+
+    .request-row {
+        grid-template-columns: 1fr;
+        gap: 3px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+
+<!-- =========================================
+     LOGIN PAGE
+========================================= -->
+
+<div id="loginPage">
+
+    <div class="login-box">
+
+        <div class="login-title">
+            KULZZY RADIO
+        </div>
+
+        <div class="login-subtitle">
+            REQUEST ADMIN PANEL
+        </div>
+
+        <form id="loginForm">
+
+            <div class="field">
+
+                <label for="email">
+                    Admin Email
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Enter admin email"
+                    required
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter password"
+                    required
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="login-button"
+                id="loginButton"
+            >
+                LOGIN
+            </button>
+
+        </form>
+
+
+        <div
+            class="login-error"
+            id="loginError"
+        ></div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================
+     ADMIN PAGE
+========================================= -->
+
+<div
+    id="adminPage"
+    class="hidden"
+>
+
+    <header class="admin-header">
+
+        <div class="header-inner">
+
+            <div>
+
+                <h1 class="admin-title">
+                    KULZZY RADIO REQUEST ADMIN
+                </h1>
+
+                <p class="admin-subtitle">
+                    Celebration Request Management
+                </p>
+
+            </div>
+
+            <button
+                class="logout-button"
+                id="logoutButton"
+            >
+                LOGOUT
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <main class="admin-content">
+
+
+        <!-- DASHBOARD -->
+
+        <div class="dashboard-grid">
+
+            <div class="dashboard-card">
+
+                <div class="dashboard-card-title">
+                    TOTAL REQUESTS
+                </div>
+
+                <div
+                    class="dashboard-card-value"
+                    id="totalRequests"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-card">
+
+                <div class="dashboard-card-title">
+                    PAID REQUESTS
+                </div>
+
+                <div
+                    class="dashboard-card-value"
+                    id="paidRequests"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-card">
+
+                <div class="dashboard-card-title">
+                    PENDING REQUESTS
+                </div>
+
+                <div
+                    class="dashboard-card-value"
+                    id="pendingRequests"
+                >
+                    0
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <h2 class="section-title">
+            CELEBRATION REQUESTS
+        </h2>
+
+
+        <div
+            class="loading"
+            id="loadingRequests"
+        >
+            Waiting for requests...
+        </div>
+
+
+        <div
+            class="empty-box hidden"
+            id="emptyRequests"
+        >
+            No celebration requests have been received yet.
+        </div>
+
+
+        <div
+            class="request-list"
+            id="requestList"
+        ></div>
+
+
+    </main>
+
+</div>
+
+
+
+<!-- =========================================
+     FIREBASE
+========================================= -->
+
+<script type="module">
+
+import {
+    initializeApp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+    getAuth,
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+    getDatabase,
+    ref,
+    onValue
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+
+/* =========================================
+   FIREBASE CONFIG
+========================================= */
+
+const firebaseConfig = {
+
+    apiKey:
+        "AIzaSyCLcHLmzy8IC4QUA_H4VZKMjhJyywW6QRc",
+
+    authDomain:
+        "bds-request-section.firebaseapp.com",
+
+    databaseURL:
+        "https://bds-request-section-default-rtdb.europe-west1.firebasedatabase.app",
+
+    projectId:
+        "bds-request-section",
+
+    storageBucket:
+        "bds-request-section.firebasestorage.app",
+
+    messagingSenderId:
+        "646189634258",
+
+    appId:
+        "1:646189634258:web:9535d9477cd39aa108130b",
+
+    measurementId:
+        "G-TW1WFL6GE5"
+
+};
+
+
+/* =========================================
+   INITIALIZE FIREBASE
+========================================= */
+
+const app =
+    initializeApp(firebaseConfig);
+
+const auth =
+    getAuth(app);
+
+const database =
+    getDatabase(app);
+
+
+/* =========================================
+   ELEMENTS
+========================================= */
+
+const loginPage =
+    document.getElementById("loginPage");
+
+const adminPage =
+    document.getElementById("adminPage");
+
+const loginForm =
+    document.getElementById("loginForm");
+
+const emailInput =
+    document.getElementById("email");
+
+const passwordInput =
+    document.getElementById("password");
+
+const loginButton =
+    document.getElementById("loginButton");
+
+const loginError =
+    document.getElementById("loginError");
+
+const logoutButton =
+    document.getElementById("logoutButton");
+
+const totalRequests =
+    document.getElementById("totalRequests");
+
+const paidRequests =
+    document.getElementById("paidRequests");
+
+const pendingRequests =
+    document.getElementById("pendingRequests");
+
+const loadingRequests =
+    document.getElementById("loadingRequests");
+
+const emptyRequests =
+    document.getElementById("emptyRequests");
+
+const requestList =
+    document.getElementById("requestList");
+
+
+/* =========================================
+   LOGIN
+========================================= */
+
+loginForm.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+        loginError.style.display = "none";
+
+        loginButton.disabled = true;
+
+        loginButton.textContent =
+            "LOGGING IN...";
+
+        const email =
+            emailInput.value.trim();
+
+        const password =
+            passwordInput.value;
+
+        try {
+
+            await signInWithEmailAndPassword(
+                auth,
+                email,
+                password
+            );
+
+        } catch (error) {
+
+            console.error(error);
+
+            loginError.textContent =
+                getLoginErrorMessage(error);
+
+            loginError.style.display =
+                "block";
+
+            loginButton.disabled =
+                false;
+
+            loginButton.textContent =
+                "LOGIN";
+        }
+
+    }
+);
+
+
+/* =========================================
+   LOGIN ERROR
+========================================= */
+
+function getLoginErrorMessage(error) {
+
+    if (
+        error.code ===
+        "auth/invalid-credential"
+    ) {
+
+        return "Incorrect email or password.";
+
+    }
+
+    if (
+        error.code ===
+        "auth/invalid-email"
+    ) {
+
+        return "Please enter a valid email address.";
+
+    }
+
+    if (
+        error.code ===
+        "auth/user-not-found"
+    ) {
+
+        return "Admin account not found.";
+
+    }
+
+    if (
+        error.code ===
+        "auth/wrong-password"
+    ) {
+
+        return "Incorrect password.";
+
+    }
+
+    return (
+        "Login failed. Please try again."
+    );
+
+}
+
+
+/* =========================================
+   AUTH STATE
+========================================= */
+
+onAuthStateChanged(
+    auth,
+    function(user) {
+
+        if (user) {
+
+            loginPage.classList.add(
+                "hidden"
+            );
+
+            adminPage.classList.remove(
+                "hidden"
+            );
+
+            loginButton.disabled =
+                false;
+
+            loginButton.textContent =
+                "LOGIN";
+
+            loadRequests();
+
+        } else {
+
+            adminPage.classList.add(
+                "hidden"
+            );
+
+            loginPage.classList.remove(
+                "hidden"
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   LOGOUT
+========================================= */
+
+logoutButton.addEventListener(
+    "click",
+    async function() {
+
+        await signOut(auth);
+
+    }
+);
+
+
+/* =========================================
+   LOAD REQUESTS
+========================================= */
+
+function loadRequests() {
+
+    const requestsRef =
+        ref(database, "requests");
+
+    onValue(
+        requestsRef,
+        function(snapshot) {
+
+            loadingRequests.classList.add(
+                "hidden"
+            );
+
+            requestList.innerHTML = "";
+
+            const data =
+                snapshot.val();
+
+            if (!data) {
+
+                totalRequests.textContent =
+                    "0";
+
+                paidRequests.textContent =
+                    "0";
+
+                pendingRequests.textContent =
+                    "0";
+
+                emptyRequests.classList.remove(
+                    "hidden"
+                );
+
+                return;
+
+            }
+
+            emptyRequests.classList.add(
+                "hidden"
+            );
+
+            const requests =
+                Object.entries(data)
+                .map(
+                    ([id, request]) => ({
+                        id,
+                        ...request
+                    })
+                )
+                .reverse();
+
+
+            let paid = 0;
+
+            let pending = 0;
+
+
+            requests.forEach(
+                function(request) {
+
+                    const status =
+                        String(
+                            request.status ||
+                            request.paymentStatus ||
+                            ""
+                        ).toLowerCase();
+
+
+                    if (
+                        status === "paid" ||
+                        status === "successful" ||
+                        status === "completed"
+                    ) {
+
+                        paid++;
+
+                    } else {
+
+                        pending++;
+
+                    }
+
+
+                    requestList.appendChild(
+                        createRequestCard(request)
+                    );
+
+                }
+            );
+
+
+            totalRequests.textContent =
+                requests.length;
+
+            paidRequests.textContent =
+                paid;
+
+            pendingRequests.textContent =
+                pending;
+
+        },
+        function(error) {
+
+            console.error(error);
+
+            loadingRequests.textContent =
+                "Unable to load requests. Check Firebase Database Rules.";
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   REQUEST CARD
+========================================= */
+
+function createRequestCard(request) {
+
+    const card =
+        document.createElement("div");
+
+    card.className =
+        "request-card";
+
+
+    const title =
+        document.createElement("h3");
+
+    title.textContent =
+        request.celebrantName ||
+        request.name ||
+        "Celebration Request";
+
+
+    card.appendChild(title);
+
+
+    addRow(
+        card,
+        "Relationship",
+        request.relationship
+    );
+
+    addRow(
+        card,
+        "Category",
+        request.category
+    );
+
+    addRow(
+        card,
+        "Celebration Type",
+        request.celebrationType ||
+        request.service
+    );
+
+    addRow(
+        card,
+        "Amount",
+        formatAmount(
+            request.amount ||
+            request.price
+        )
+    );
+
+    addRow(
+        card,
+        "Celebrant Phone",
+        request.celebrantPhone
+    );
+
+    addRow(
+        card,
+        "Sender Name",
+        request.senderName
+    );
+
+    addRow(
+        card,
+        "WhatsApp",
+        request.whatsappNumber
+    );
+
+    addRow(
+        card,
+        "Celebration Date",
+        request.celebrationDate
+    );
+
+    addRow(
+        card,
+        "Celebration Message",
+        request.writeup ||
+        request.message
+    );
+
+    addRow(
+        card,
+        "Payment Reference",
+        request.paymentReference ||
+        request.tx_ref ||
+        request.transactionReference
+    );
+
+    addStatusRow(
+        card,
+        request.status ||
+        request.paymentStatus
+    );
+
+    addRow(
+        card,
+        "Submitted",
+        formatDate(
+            request.createdAt ||
+            request.timestamp
+        )
+    );
+
+
+    return card;
+
+}
+
+
+/* =========================================
+   ADD ROW
+========================================= */
+
+function addRow(
+    card,
+    label,
+    value
+) {
+
+    if (
+        value === undefined ||
+        value === null ||
+        value === ""
+    ) {
+
+        return;
+
+    }
+
+    const row =
+        document.createElement("div");
+
+    row.className =
+        "request-row";
+
+
+    const labelElement =
+        document.createElement("div");
+
+    labelElement.className =
+        "request-label";
+
+    labelElement.textContent =
+        label;
+
+
+    const valueElement =
+        document.createElement("div");
+
+    valueElement.className =
+        "request-value";
+
+    valueElement.textContent =
+        String(value);
+
+
+    row.appendChild(
+        labelElement
+    );
+
+    row.appendChild(
+        valueElement
+    );
+
+    card.appendChild(row);
+
+}
+
+
+/* =========================================
+   STATUS
+========================================= */
+
+function addStatusRow(
+    card,
+    value
+) {
+
+    const row =
+        document.createElement("div");
+
+    row.className =
+        "request-row";
+
+
+    const labelElement =
+        document.createElement("div");
+
+    labelElement.className =
+        "request-label";
+
+    labelElement.textContent =
+        "Payment Status";
+
+
+    const valueElement =
+        document.createElement("div");
+
+    valueElement.className =
+        "request-value";
+
+
+    const status =
+        String(value || "pending")
+        .toLowerCase();
+
+
+    const badge =
+        document.createElement("span");
+
+
+    if (
+        status === "paid" ||
+        status === "successful" ||
+        status === "completed"
+    ) {
+
+        badge.className =
+            "status status-paid";
+
+        badge.textContent =
+            "PAID";
+
+    } else if (
+        status === "rejected"
+    ) {
+
+        badge.className =
+            "status status-rejected";
+
+        badge.textContent =
+            "REJECTED";
+
+    } else {
+
+        badge.className =
+            "status status-pending";
+
+        badge.textContent =
+            "PENDING";
+
+    }
+
+
+    valueElement.appendChild(
+        badge
+    );
+
+    row.appendChild(
+        labelElement
+    );
+
+    row.appendChild(
+        valueElement
+    );
+
+    card.appendChild(row);
+
+}
+
+
+/* =========================================
+   AMOUNT
+========================================= */
+
+function formatAmount(value) {
+
+    if (
+        value === undefined ||
+        value === null ||
+        value === ""
+    ) {
+
+        return "Not provided";
+
+    }
+
+    const number =
+        Number(value);
+
+    if (
+        Number.isNaN(number)
+    ) {
+
+        return String(value);
+
+    }
+
+    return (
+        "₦" +
+        number.toLocaleString(
+            "en-NG"
+        )
+    );
+
+}
+
+
+/* =========================================
+   DATE
+========================================= */
+
+function formatDate(value) {
+
+    if (!value) {
+
+        return "Not provided";
+
+    }
+
+    const date =
+        new Date(value);
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return String(value);
+
+    }
+
+    return date.toLocaleString(
+        "en-NG"
+    );
+
+}
+
+</script>
+
+</body>
+</html>
