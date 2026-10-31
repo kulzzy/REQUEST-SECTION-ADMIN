@@ -1,0 +1,289 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#06122a">
+<title>Kulzzy Radio Firebase Export Combiner</title><style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+    background: #06122a;
+    color: white;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 650px;
+    margin: 30px auto;
+    padding: 24px;
+    background: #0d1d3c;
+    border: 1px solid #263b60;
+    border-radius: 15px;
+}
+
+h1 {
+    color: #ffd700;
+    text-align: center;
+    font-size: 25px;
+}
+
+.description {
+    color: #e1e8f5;
+    font-size: 15px;
+}
+
+button {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 9px;
+    background: #ffd700;
+    color: #06122a;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: wait;
+}
+
+.status {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 9px;
+    background: #06122a;
+    color: #ffffff;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+.warning {
+    margin-top: 18px;
+    padding: 14px;
+    border-left: 4px solid #ffd700;
+    background: #172747;
+    font-size: 14px;
+}
+
+.success {
+    color: #7dffad;
+}
+
+.error {
+    color: #ff9999;
+}
+
+footer {
+    margin-top: 25px;
+    color: #aebbd1;
+    text-align: center;
+    font-size: 12px;
+}
+</style></head><body><div class="container"><h1>KULZZY RADIO</h1>
+
+<h2>Firebase Export Combiner</h2>
+
+<p class="description">
+    Combine your four existing Firebase database exports into
+    one complete JSON file. The resulting file is intended for
+    importing into the new Kulzzy Radio Navigation database.
+</p>
+
+<p>
+    <strong>Files to combine:</strong>
+</p>
+
+<ol>
+    <li>kulzzyContent</li>
+    <li>kulzzyMorePages</li>
+    <li>kulzzyNavigation</li>
+    <li>kulzzyVotersPages</li>
+</ol>
+
+<button id="combineButton">
+    COMBINE AND DOWNLOAD JSON
+</button>
+
+<div id="status" class="status">
+    Ready. Tap the button to start.
+</div>
+
+<div class="warning">
+    <strong>Important:</strong> This tool reads the four existing
+    files from GitHub. It does not delete or modify the original
+    exports or either Firebase database. Importing the combined
+    file into Firebase at the root will replace the data currently
+    at that root.
+</div>
+
+<footer>
+    Kulzzy Radio Network — Celebrating Lives Everyday
+</footer>
+
+</div><script>
+"use strict";
+
+const GITHUB_BASE =
+    "https://raw.githubusercontent.com/kulzzy/REQUEST-SECTION-ADMIN/main/";
+
+const EXPORTS = [
+    {
+        key: "kulzzyContent",
+        filename: "kulzzy-radio-chat-default-rtdb-kulzzyContent-export.json"
+    },
+    {
+        key: "kulzzyMorePages",
+        filename: "kulzzy-radio-chat-default-rtdb-kulzzyMorePages-export.json"
+    },
+    {
+        key: "kulzzyNavigation",
+        filename: "kulzzy-radio-chat-default-rtdb-kulzzyNavigation-export.json"
+    },
+    {
+        key: "kulzzyVotersPages",
+        filename: "kulzzy-radio-chat-default-rtdb-kulzzyVotersPages-export.json"
+    }
+];
+
+const button = document.getElementById("combineButton");
+const statusBox = document.getElementById("status");
+
+function showStatus(message, type = "") {
+    statusBox.textContent = message;
+    statusBox.className = "status " + type;
+}
+
+async function fetchExport(item) {
+    const url = GITHUB_BASE + encodeURIComponent(item.filename);
+
+    const response = await fetch(url, {
+        cache: "no-store"
+    });
+
+    if (!response.ok) {
+        throw new Error(
+            "Could not read " + item.filename +
+            ". HTTP status: " + response.status
+        );
+    }
+
+    const text = await response.text();
+
+    let data;
+
+    try {
+        data = JSON.parse(text);
+    } catch {
+        throw new Error(
+            item.filename + " is not valid JSON."
+        );
+    }
+
+    if (
+        data === null ||
+        typeof data !== "object" ||
+        Array.isArray(data)
+    ) {
+        throw new Error(
+            item.filename + " does not contain the expected JSON object."
+        );
+    }
+
+    return data;
+}
+
+async function combineExports() {
+    button.disabled = true;
+
+    try {
+        const combined = {};
+
+        for (let i = 0; i < EXPORTS.length; i++) {
+            const item = EXPORTS[i];
+
+            showStatus(
+                "Reading export " + (i + 1) + " of " +
+                EXPORTS.length + ":\n" + item.filename
+            );
+
+            combined[item.key] = await fetchExport(item);
+        }
+
+        const requiredKeys = [
+            "kulzzyContent",
+            "kulzzyMorePages",
+            "kulzzyNavigation",
+            "kulzzyVotersPages"
+        ];
+
+        for (const key of requiredKeys) {
+            if (!Object.prototype.hasOwnProperty.call(combined, key)) {
+                throw new Error(
+                    "A required database branch is missing: " + key
+                );
+            }
+        }
+
+        const json = JSON.stringify(combined, null, 2);
+
+        const blob = new Blob(
+            [json],
+            { type: "application/json;charset=utf-8" }
+        );
+
+        const downloadUrl = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+
+        link.href = downloadUrl;
+        link.download =
+            "kulzzy-radio-navigation-COMBINED-import.json";
+
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        setTimeout(() => {
+            URL.revokeObjectURL(downloadUrl);
+        }, 3000);
+
+        showStatus(
+            "SUCCESS!\n\n" +
+            "All four exports have been combined into one JSON file.\n\n" +
+            "Included branches:\n" +
+            "1. kulzzyContent\n" +
+            "2. kulzzyMorePages\n" +
+            "3. kulzzyNavigation\n" +
+            "4. kulzzyVotersPages\n\n" +
+            "Download filename:\n" +
+            "kulzzy-radio-navigation-COMBINED-import.json\n\n" +
+            "The download should now begin.",
+            "success"
+        );
+
+    } catch (error) {
+        showStatus(
+            "COMBINATION FAILED\n\n" +
+            error.message +
+            "\n\nCheck that all four original export files exist " +
+            "in the repository's main branch and that your internet " +
+            "connection is working. No Firebase database was changed.",
+            "error"
+        );
+
+    } finally {
+        button.disabled = false;
+    }
+}
+
+button.addEventListener("click", combineExports);
+</script></body>
+</html>
